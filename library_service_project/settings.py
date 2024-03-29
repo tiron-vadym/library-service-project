@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_spectacular",
     "books_service",
+    "customer",
 ]
 
 MIDDLEWARE = [
@@ -124,6 +125,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
+AUTH_USER_MODEL = "customer.User"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
@@ -155,7 +158,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=365),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,
 }
