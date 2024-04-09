@@ -24,4 +24,13 @@ urlpatterns = [
         "api/books-service/", include("books_service.urls", namespace="books-service")
     ),
     path("api/customer/", include("customer.urls", namespace="customer")),
+    path(
+        "api/borrowing-service/",
+        include("borrowings_service.urls", namespace="borrowings-service"),
+    ),
+    path(
+        "api/notifications-service/",
+        include("notifications_service.urls", namespace="notifications-service"),
+    ),
+    path("__debug__/", include("debug_toolbar.urls")),
 ]

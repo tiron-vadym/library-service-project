@@ -40,4 +40,10 @@ class ReturnBorrowingSerializer(serializers.ModelSerializer):
             "book",
             "user",
         ]
-        read_only_fields = ["actual_return_date"]
+        read_only_fields = [
+            "borrow_date",
+            "expected_return_date",
+            "actual_return_date",
+            "book",
+            "user",
+        ]

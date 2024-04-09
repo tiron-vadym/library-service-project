@@ -1,8 +1,7 @@
 from django.urls import path
 
 from borrowings_service.views import (
-    BorrowingCreateView,
-    BorrowingListView,
+    BorrowingCreateListView,
     BorrowingDetailView,
     ReturnBorrowingView,
 )
@@ -10,8 +9,7 @@ from borrowings_service.views import (
 app_name = "borrowings_service"
 
 urlpatterns = [
-    path("borrowings/", BorrowingCreateView.as_view(), name="borrowing_create"),
-    path("borrowings/", BorrowingListView.as_view(), name="borrowing_list"),
+    path("borrowings/", BorrowingCreateListView.as_view(), name="borrowing"),
     path("borrowings/<pk>/", BorrowingDetailView.as_view(), name="borrowing_detail"),
     path(
         "borrowings/<pk>/return/",
