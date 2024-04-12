@@ -7,7 +7,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.db.models import Q
 
-from borrowings_service.models import Borrowing, Book
+from borrowings_service.models import Borrowing
 from borrowings_service.serializers import (
     ExtendedBorrowingSerializer,
     BorrowingSerializer,
