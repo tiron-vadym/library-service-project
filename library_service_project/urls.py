@@ -29,8 +29,8 @@ urlpatterns = [
         include("borrowings_service.urls", namespace="borrowings-service"),
     ),
     path(
-        "api/notifications-service/",
-        include("notifications_service.urls", namespace="notifications-service"),
+        "api/payments_service/",
+        include("payments_service.urls", namespace="payments-service"),
     ),
     path("__debug__/", include("debug_toolbar.urls")),
 ]
