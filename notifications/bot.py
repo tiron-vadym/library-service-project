@@ -1,20 +1,6 @@
-import logging
 import os
 
 import requests
-from telegram import Update
-from telegram.ext import ContextTypes
-
-
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
-)
-
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await context.bot.send_message(
-        chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!"
-    )
 
 
 def send_message(text):
