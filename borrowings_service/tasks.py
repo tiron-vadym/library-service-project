@@ -1,9 +1,9 @@
+from datetime import timezone, timedelta
+
 from celery import shared_task
-import requests
-import os
 
 from borrowings_service.models import Borrowing
-from notifications.bot import send_message
+from utilities.bot import send_message
 
 
 @shared_task

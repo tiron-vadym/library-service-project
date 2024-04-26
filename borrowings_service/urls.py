@@ -10,7 +10,11 @@ app_name = "borrowings_service"
 
 urlpatterns = [
     path("borrowings/", BorrowingCreateListView.as_view(), name="borrowing"),
-    path("borrowings/<pk>/", BorrowingDetailView.as_view(), name="borrowing_detail"),
+    path(
+        "borrowings/<pk>/",
+        BorrowingDetailView.as_view(),
+        name="borrowing_detail"
+    ),
     path(
         "borrowings/<pk>/return/",
         ReturnBorrowingView.as_view(),

@@ -14,8 +14,8 @@ from borrowings_service.serializers import (
     ReturnBorrowingSerializer,
 )
 from borrowings_service.permissions import IsOwner
-
-from notifications.bot import send_message
+from utilities.bot import send_message
+from utilities.stripe import stripe_helper, pay_fine
 
 
 class BorrowingCreateListView(generics.CreateAPIView, generics.ListAPIView):
@@ -26,23 +26,25 @@ class BorrowingCreateListView(generics.CreateAPIView, generics.ListAPIView):
     def perform_create(self, serializer):
         serializer.save(user_id=self.request.user.id)
 
+    @transaction.atomic
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
 
-        with transaction.atomic():
-            self.perform_create(serializer)
-
-            book = serializer.validated_data["book"]
-            if book:
-                if book.inventory > 0:
-                    book.inventory -= 1
-                    book.save()
-                else:
-                    return Response(
-                        {"error": "Book out of stock."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
+        book = serializer.validated_data["book"]
+        if book:
+            if book.inventory > 0:
+                book.inventory -= 1
+                book.save()
+            else:
+                return Response(
+                    {"error": "Book out of stock."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+        borrowing_id = serializer.data.get("id")
+        borrowing = Borrowing.objects.get(id=borrowing_id)
+        stripe_helper(borrowing)
         send_message("Well done! New borrowing created!")
         headers = self.get_success_headers(serializer.data)
         return Response(
@@ -106,5 +108,8 @@ class ReturnBorrowingView(generics.UpdateAPIView):
                 book.save()
 
             serializer = self.get_serializer(instance)
-            send_message("Successful payment! The book was successfully returned.")
+            send_message(
+                "Successful payment! The book was successfully returned."
+            )
+            pay_fine(instance)
             return Response(serializer.data)
