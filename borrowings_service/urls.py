@@ -13,11 +13,11 @@ urlpatterns = [
     path(
         "borrowings/<pk>/",
         BorrowingDetailView.as_view(),
-        name="borrowing_detail"
+        name="borrowing-detail"
     ),
     path(
         "borrowings/<pk>/return/",
         ReturnBorrowingView.as_view(),
-        name="borrowing_return",
+        name="borrowing-return",
     ),
 ]

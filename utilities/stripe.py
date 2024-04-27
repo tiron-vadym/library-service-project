@@ -15,13 +15,9 @@ def calculate_total_amount(borrowing: Borrowing) -> int:
     daily_fee_cents = borrowing.book.daily_fee * 100
     looking_price = int(daily_fee_cents) * using_days
 
-    days_overdue = (borrowing.actual_return_date - borrowing.expected_return_date).days
-    fine_amount = int((days_overdue * borrowing.book.daily_fee * 2) * 100)
-    total = fine_amount + looking_price
-
     return stripe.Price.create(
         product="prod_Pz5uWC2BXMLDzx",
-        unit_amount=total,
+        unit_amount=looking_price,
         currency="usd",
     )
 
