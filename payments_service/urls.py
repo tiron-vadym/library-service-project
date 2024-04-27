@@ -3,7 +3,7 @@ from rest_framework import routers
 
 from payments_service.views import PaymentViewSet
 
-app_name = "payments_service"
+app_name = "payments-service"
 
 router = routers.DefaultRouter()
 router.register("payments", PaymentViewSet)

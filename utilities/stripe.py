@@ -15,9 +15,7 @@ def calculate_total_amount(borrowing: Borrowing) -> int:
     daily_fee_cents = borrowing.book.daily_fee * 100
     looking_price = int(daily_fee_cents) * using_days
 
-    days_overdue = (
-            borrowing.actual_return_date - borrowing.expected_return_date
-    ).days
+    days_overdue = (borrowing.actual_return_date - borrowing.expected_return_date).days
     fine_amount = int((days_overdue * borrowing.book.daily_fee * 2) * 100)
     total = fine_amount + looking_price
 
@@ -37,13 +35,9 @@ def session(price):
             },
         ],
         mode="payment",
-        success_url=request.build_absolute_uri(
-            reverse("payments_service:success")
-        )
+        success_url=request.build_absolute_uri(reverse("payments-service:success"))
         + f"?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url=request.build_absolute_uri(
-            reverse("payments_service:cancel")
-        )
+        cancel_url=request.build_absolute_uri(reverse("payments-service:cancel"))
         + f"?session_id={CHECKOUT_SESSION_ID}",
     )
     return checkout_session
