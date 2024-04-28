@@ -6,6 +6,8 @@ from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils import timezone
 from django.db.models import Q
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
 from borrowings_service.models import Borrowing
 from borrowings_service.serializers import (
@@ -74,6 +76,25 @@ class BorrowingCreateListView(generics.CreateAPIView, generics.ListAPIView):
 
         return queryset.select_related("book", "user")
 
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name="is_active",
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+                description="Filter borrowing what's currently active",
+            ),
+            OpenApiParameter(
+                name="user_id",
+                type=OpenApiTypes.INT,
+                location=OpenApiParameter.QUERY,
+                description="See other users borrowings if you are admin",
+            ),
+        ]
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
 
 class BorrowingDetailView(generics.RetrieveAPIView):
     queryset = Borrowing.objects.all().select_related("book", "user")
@@ -108,8 +129,6 @@ class ReturnBorrowingView(generics.UpdateAPIView):
                 book.save()
 
             serializer = self.get_serializer(instance)
-            send_message(
-                "Successful payment! The book was successfully returned."
-            )
+            send_message("Successful payment! The book was successfully returned.")
             pay_fine(instance)
             return Response(serializer.data)
