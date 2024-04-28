@@ -54,7 +54,7 @@ docker-compose up
 #### Notifications Service (Telegram)
 
 - Sending notifications about new borrowing created, borrowings overdue & successful payment
-- Scheduled tasks for notifications about overdue borrowings
+- Scheduled tasks for notifications about overdue borrowings using Сelery
 - Telegram API integration
 
 #### Payments Service (Stripe)
