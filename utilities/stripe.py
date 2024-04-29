@@ -1,6 +1,6 @@
 import stripe
 from django.conf import settings
-from django.http import request
+from django.http import HttpRequest
 from django.urls import reverse
 
 
@@ -31,9 +31,9 @@ def session(price):
             },
         ],
         mode="payment",
-        success_url=request.build_absolute_uri(reverse("payments-service:success"))
+        success_url=HttpRequest.build_absolute_uri(reverse("payments-service:success"))
         + f"?session_id={CHECKOUT_SESSION_ID}",
-        cancel_url=request.build_absolute_uri(reverse("payments-service:cancel"))
+        cancel_url=HttpRequest.build_absolute_uri(reverse("payments-service:cancel"))
         + f"?session_id={CHECKOUT_SESSION_ID}",
     )
     return checkout_session
