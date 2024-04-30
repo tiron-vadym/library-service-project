@@ -129,6 +129,8 @@ class ReturnBorrowingView(generics.UpdateAPIView):
                 book.save()
 
             serializer = self.get_serializer(instance)
-            send_message("Successful payment! The book was successfully returned.")
+            send_message(
+                "Successful payment! The book was successfully returned."
+            )
             pay_fine(instance)
             return Response(serializer.data)
