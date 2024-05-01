@@ -1,8 +1,4 @@
 from django.db import models
-from django.http import request
-from django.urls import reverse
-
-import stripe
 
 from borrowings_service.models import Borrowing
 
