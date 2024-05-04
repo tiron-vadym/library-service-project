@@ -22,21 +22,21 @@ class PaymentViewSet(viewsets.ModelViewSet):
         return queryset
 
     @action(detail=True, methods=["get"], url_path="success")
-    def success(self, request, pk=None):
-        payment = Payment.objects.get(id=pk)
-        session = stripe.checkout.Session.retrieve(payment.session_id)
-        if session.payment_status == "paid":
-            payment.status = "PAID"
-            payment.save()
-            return Response(
-                {"message": "Payment success"}, status=status.HTTP_200_OK
-            )
+    def success(self, request):
+        # payment = Payment.objects.get(id=pk)
+        # session = stripe.checkout.Session.retrieve(payment.session_id)
+        # if session.payment_status == "paid":
+        #     payment.status = "PAID"
+        #     payment.save()
+        #     return Response(
+        #         {"message": "Payment success"}, status=status.HTTP_200_OK
+        #     )
         return Response(
             {"message": "Payment wasn't paid"}, status=status.HTTP_200_OK
         )
 
     @action(detail=True, methods=["get"], url_path="cancel")
-    def cancel(self, request, pk=None):
+    def cancel(self, request):
         return Response(
             {"message": "Payment can be paid a bit later"},
             status=status.HTTP_200_OK
