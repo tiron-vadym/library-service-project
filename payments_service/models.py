@@ -25,9 +25,9 @@ class Payment(models.Model):
     borrowing = models.ForeignKey(
         Borrowing, on_delete=models.CASCADE, related_name="payment"
     )
-    session_url = models.URLField(max_length=1000)
-    session_id = models.CharField(max_length=255)
+    session_url = models.URLField(max_length=1000, default="http://127.0.0.1:8000")
+    session_id = models.CharField(max_length=255, default=1)
     money_to_pay = models.DecimalField(max_digits=5, decimal_places=2)
 
     def __str__(self):
-        return f"{self.session_url}: {self.status}"
+        return f"{self.type} for {self.borrowing} ({self.status})"

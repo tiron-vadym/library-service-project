@@ -8,7 +8,7 @@ from django.urls import reverse
 from borrowings_service.models import Borrowing
 from payments_service.models import Payment
 
-stripe.api_key = "sk_test_51P6uAS2KmmuW6pkTcMus4w5XlGuYCdKh6dJJ61vJLZYvL1MR0cracGQuFh9wTJiE4Sqlmk18gERLZXgegM1TSIKE0098cJlRMU"
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 def calculate_total_amount(borrowing: Borrowing) -> int:
@@ -23,7 +23,7 @@ def calculate_total_amount(borrowing: Borrowing) -> int:
     )
 
 
-def session(price):
+def session(self, price, payment):
     checkout_session = stripe.checkout.Session.create(
         line_items=[
             {
@@ -33,22 +33,29 @@ def session(price):
         ],
         mode="payment",
         success_url=HttpRequest.build_absolute_uri(
-            reverse("payments-service:payment-success")),
+            self,
+            location=reverse("payments-service:payment-success",
+                             kwargs={"pk": payment.id})
+        ),
         cancel_url=HttpRequest.build_absolute_uri(
-            reverse("payments-service:payment-cancel")),
+            self,
+            location=reverse("payments-service:payment-cancel",
+                             kwargs={"pk": payment.id})
+        ),
     )
     return checkout_session
 
 
 def stripe_helper(borrowing):
     price = calculate_total_amount(borrowing)
-    checkout_session = session(price)
-    Payment.objects.create(
+    payment = Payment.objects.create(
         borrowing=borrowing,
-        session_url=checkout_session.url,
-        session_id=checkout_session.id,
         money_to_pay=price["unit_amount"] / 100,
     )
+    self = HttpRequest()
+    checkout_session = session(self, price, payment)
+    payment.session_url = checkout_session.url
+    payment.session_id = checkout_session.id
     return redirect(checkout_session.url, code=303)
 
 
@@ -65,13 +72,14 @@ def pay_fine(borrowing: Borrowing) -> int:
             currency="usd",
         )
 
-        checkout_session = session(price)
         payment = Payment.objects.create(
             status=Payment.PaymentStatus.PAID,
             type=Payment.PaymentType.FINE,
             borrowing=borrowing,
-            session_url=checkout_session.url,
-            session_id=checkout_session.id,
             money_to_pay=fine_amount / 100,
         )
-        return payment
+        self = HttpRequest()
+        checkout_session = session(self, price, payment)
+        payment.session_url = checkout_session.url
+        payment.session_id = checkout_session.id
+        return redirect(checkout_session.url, code=303)
