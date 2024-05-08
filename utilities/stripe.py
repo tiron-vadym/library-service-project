@@ -1,9 +1,8 @@
 from django.shortcuts import redirect
-
-import stripe
 from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse
+import stripe
 
 from borrowings_service.models import Borrowing
 from payments_service.models import Payment
@@ -23,7 +22,10 @@ def calculate_total_amount(borrowing: Borrowing) -> int:
     )
 
 
-def session(self, price, payment):
+def session(price, payment):
+    request = HttpRequest()
+    request.META["SERVER_NAME"] = settings.SERVER_NAME
+    request.META["SERVER_PORT"] = settings.SERVER_PORT
     checkout_session = stripe.checkout.Session.create(
         line_items=[
             {
@@ -32,13 +34,11 @@ def session(self, price, payment):
             },
         ],
         mode="payment",
-        success_url=HttpRequest.build_absolute_uri(
-            self,
+        success_url=request.build_absolute_uri(
             location=reverse("payments-service:payment-success",
                              kwargs={"pk": payment.id})
         ),
-        cancel_url=HttpRequest.build_absolute_uri(
-            self,
+        cancel_url=request.build_absolute_uri(
             location=reverse("payments-service:payment-cancel",
                              kwargs={"pk": payment.id})
         ),
@@ -52,11 +52,11 @@ def stripe_helper(borrowing):
         borrowing=borrowing,
         money_to_pay=price["unit_amount"] / 100,
     )
-    self = HttpRequest()
-    checkout_session = session(self, price, payment)
+
+    checkout_session = session(price, payment)
     payment.session_url = checkout_session.url
     payment.session_id = checkout_session.id
-    return redirect(checkout_session.url, code=303)
+    return payment
 
 
 def pay_fine(borrowing: Borrowing) -> int:
@@ -82,4 +82,4 @@ def pay_fine(borrowing: Borrowing) -> int:
         checkout_session = session(self, price, payment)
         payment.session_url = checkout_session.url
         payment.session_id = checkout_session.id
-        return redirect(checkout_session.url, code=303)
+        return payment
